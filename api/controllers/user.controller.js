@@ -1,6 +1,7 @@
 import bycryptjs from "bcryptjs";
 import User from "../models/userModel.js";
 import { errorHandler } from "../utils/error.js";
+import Listing from "../models/userListing.js";
 
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
@@ -39,3 +40,17 @@ export const deleteUser = async (req, res, next) => {
     next(error)
   }
 };
+
+
+export const gerUserListings = async (req,res,next ) => {
+  if(req.user.id === req.params.id) {
+    try {
+      const listings= await Listing.find({ userRef: req.params.id})
+      res.status(200).json(listings)
+    } catch (error) {
+      next(error)
+    }
+  }else{
+    return next(errorHandler(401, "You can only view your own listings!"))
+  }
+}
